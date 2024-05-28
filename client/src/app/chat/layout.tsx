@@ -19,33 +19,8 @@ import Divider from '@mui/material/Divider';
 import { useSelector } from "react-redux";
 import { AuthState } from "@/lib/features/auth/auth.types";
 import { useLogoutMutation } from '@/lib/features/auth/auth.api'
-
-const activeUsers = [
-    {
-        name: 'Jose',
-        email: 'j@mail.com',
-    },
-    {
-        name: 'Adriana',
-        email: 'a@mail.com'
-    },
-    {
-        name: 'John',
-        email: 'john@mail.com'
-    },
-    {
-        name: 'Emily',
-        email: 'emily@mail.com'
-    },
-    {
-        name: 'Michael',
-        email: 'michael@mail.com'
-    },
-    {
-        name: 'Sophia',
-        email: 'sophia@mail.com'
-    }
-]
+import { useWebSocketQuery } from '@/lib/features/websocket/websocket.api'
+import ActiveUsers from "./active-users";
 
 const activeChats = [
     {
@@ -63,6 +38,7 @@ const activeChats = [
 ]
 
 export default function Layout({ children }: Readonly<React.PropsWithChildren>) {
+    useWebSocketQuery(undefined)
     const authStateSelector = useSelector((state: { auth: AuthState }) => state.auth)
     const [logout] = useLogoutMutation()
     const sideNavWidth = 300
@@ -156,28 +132,7 @@ export default function Layout({ children }: Readonly<React.PropsWithChildren>) 
                         borderLeft: '1px solid #D9D9D9',
                     }}
                 >
-                    <List
-                        component="nav"
-                        subheader={
-                            <ListSubheader
-                                component="div"
-                            >
-                                Usuarios activos
-                            </ListSubheader>
-                        }
-                    >
-
-                        {activeUsers.map((chat, index) => (
-                            <ListItem key={index} disablePadding>
-                                <ListItemButton
-                                    LinkComponent={Link}
-                                    href={``}
-                                >
-                                    <ListItemText primary={chat.name} />
-                                </ListItemButton>
-                            </ListItem>
-                        ))}
-                    </List>
+                    <ActiveUsers />
                 </Box>
             </Stack>
         </Box>

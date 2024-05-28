@@ -1,6 +1,7 @@
 import React from "react";
 import MessageRight from "./message-right";
 import MessageLeft from "./message-left";
+import MessageCenter from "./message-center";
 
 
 type ChatMessageProps = {
@@ -12,5 +13,10 @@ type ChatMessageProps = {
 }
 
 export default function ChatMessage(props: ChatMessageProps) {
-    return props.me ? <MessageRight {...props} name="" /> : <MessageLeft {...props} />
+    if (props.email === 'server@email.com')
+        return <MessageCenter {...props} />
+    else if (props.me)
+        return <MessageRight {...props} name="" />
+    else if (!props.me)
+        return <MessageLeft {...props} />
 }

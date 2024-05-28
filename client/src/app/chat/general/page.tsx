@@ -40,6 +40,12 @@ const messages = [
         timestamp: Date.now(),
     },
     {
+        email: 'server@mail.com',
+        name: 'Server',
+        message: 'Andres se ha unido a la conversación',
+        timestamp: Date.now(),
+    },
+    {
         email: 'user5@mail.com',
         name: 'User 5',
         message: 'Good day!',

@@ -1,7 +1,6 @@
-export type AuthLoginDto = {
-    name: string,
-    email: string,
-}
+import { User } from "@/types"
+
+export type AuthLoginDto = User
 
 export interface AuthState {
     user: AuthLoginDto | undefined

@@ -8,6 +8,7 @@ CORS(app)
 app.config["SECRET_KEY"] = "secret"
 socketio = SocketIO(app, cors_allowed_origins="*")
 
+users = []
 
 @app.route("/")
 def hello_world():
@@ -16,7 +17,9 @@ def hello_world():
 @app.route("/auth/login", methods=["POST"])
 def auth_login():
     data = request.json
+    users.append(data)
     socketio.emit("userJoined", data)
+    socketio.emit("usersList", users)
 
     return jsonify(data)
 
@@ -26,6 +29,10 @@ def auth_logout():
     socketio.emit("userLeft", data)
 
     return jsonify(data)
+
+@app.route("/users", methods=["GET"])
+def get_users():
+    return jsonify(users)
 
 @socketio.on("connect")
 def handle_connect(auth):
