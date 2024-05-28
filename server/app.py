@@ -26,7 +26,15 @@ def auth_login():
 @app.route("/auth/logout", methods=["POST"])
 def auth_logout():
     data = request.json
-    socketio.emit("userLeft", data)
+    email = data.get("email")
+
+    if email:
+        for user in users:
+            if user.get("email") == email:
+                users.remove(user)
+                socketio.emit("userLeft", user)
+                socketio.emit("usersList", users)
+                break
 
     return jsonify(data)
 
