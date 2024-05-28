@@ -11,10 +11,14 @@ import ListItemText from '@mui/material/ListItemText';
 import ListSubheader from '@mui/material/ListSubheader';
 import Stack from '@mui/material/Stack';
 import Toolbar from "@mui/material/Toolbar";
+import Typography from "@mui/material/Typography";
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
-import React from "react";
+import { redirect } from 'next/navigation';
+import React, { useEffect } from "react";
 import Divider from '@mui/material/Divider';
+import { useSelector } from "react-redux";
+import { AuthState } from "@/lib/features/auth/auth.types";
+import { useLogoutMutation } from '@/lib/features/auth/auth.api'
 
 const activeUsers = [
     {
@@ -59,17 +63,32 @@ const activeChats = [
 ]
 
 export default function Layout({ children }: Readonly<React.PropsWithChildren>) {
-    const router = useRouter()
+    const authStateSelector = useSelector((state: { auth: AuthState }) => state.auth)
+    const [logout] = useLogoutMutation()
     const sideNavWidth = 300
+
+    useEffect(() => {
+        if (!authStateSelector?.isLoggedIn) {
+            redirect('/login')
+        }
+    }, [authStateSelector])
+
+    const handleLogoutButtonClick = async () => {
+        if (authStateSelector.user)
+            await logout(authStateSelector.user)
+    }
 
     return (
         <Box sx={{ flexGrow: 1 }}>
             <AppBar position="static">
                 <Toolbar>
+                    <Typography variant="h6" component="div" sx={{ flexGrow: 1, width: '400px' }}>
+                        {authStateSelector?.user?.name}
+                    </Typography>
                     <Grid container justifyContent="flex-end">
                         <Button
                             size="large"
-                            onClick={() => router.push('/login')}
+                            onClick={handleLogoutButtonClick}
                             color="inherit"
                         >
                             Salir

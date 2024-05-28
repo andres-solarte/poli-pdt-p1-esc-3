@@ -8,19 +8,21 @@ import CardActions from '@mui/material/CardActions';
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 import { useForm } from 'react-hook-form';
+import { useLoginMutation } from '@/lib/features/auth/auth.api'
+import { AuthLoginDto } from '@/lib/features/auth/auth.types';
 
-const defaultValues = {
+const defaultValues: AuthLoginDto = {
     name: '',
     email: '',
 }
 
-
 export default function Page() {
-    const { register, handleSubmit, formState, control } = useForm({ defaultValues });
+    const [login, loginStatus] = useLoginMutation()
+    const { register, handleSubmit, formState } = useForm({ defaultValues });
     const { errors } = formState
 
-    const onSubmit = async (data: any) => {
-        console.log(data)
+    const onSubmit = async (data: AuthLoginDto) => {
+        await login(data)
     }
 
     return (
@@ -58,6 +60,7 @@ export default function Page() {
                     <CardActions>
                         <Stack direction={'row'} justifyContent={'center'} sx={{ width: '100%' }}>
                             <Button
+                                disabled={loginStatus.isLoading}
                                 variant='contained'
                                 color='primary'
                                 onClick={handleSubmit(onSubmit)}
