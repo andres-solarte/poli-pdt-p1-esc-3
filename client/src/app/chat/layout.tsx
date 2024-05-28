@@ -21,6 +21,7 @@ import { AuthState } from "@/lib/features/auth/auth.types";
 import { useLogoutMutation } from '@/lib/features/auth/auth.api'
 import { useWebSocketQuery } from '@/lib/features/websocket/websocket.api'
 import ActiveUsers from "./active-users";
+import ActiveConversations from "./active-conversations";
 
 const activeChats = [
     {
@@ -95,28 +96,9 @@ export default function Layout({ children }: Readonly<React.PropsWithChildren>) 
 
                     <Divider sx={{ mt: 2, mb: 2 }} />
 
-                    <List
-                        component="nav"
-                        subheader={
-                            <ListSubheader
-                                component="div"
-                            >
-                                Conversaciones activas
-                            </ListSubheader>
-                        }
-                    >
-
-                        {activeChats.map((chat, index) => (
-                            <ListItem key={index} disablePadding>
-                                <ListItemButton
-                                    LinkComponent={Link}
-                                    href={``}
-                                >
-                                    <ListItemText primary={chat.name} />
-                                </ListItemButton>
-                            </ListItem>
-                        ))}
-                    </List>
+                    {authStateSelector?.user && (
+                        <ActiveConversations email={authStateSelector.user?.email} />
+                    )}
                 </Box>
                 <Box
                     sx={{

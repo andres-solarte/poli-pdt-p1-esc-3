@@ -11,6 +11,7 @@ socketio = SocketIO(app, cors_allowed_origins="*")
 
 users = []
 messages = []
+rooms = []
 
 def get_user_by_email(email):
     for user in users:
@@ -28,9 +29,11 @@ def get_messages_by_room(room):
 
     return messages_in_room
 
+
 @app.route("/")
 def hello_world():
     return "<p>Hello, World!</p>"
+
 
 @app.route("/auth/login", methods=["POST"])
 def auth_login():
@@ -44,6 +47,7 @@ def auth_login():
     socketio.emit("usersList", users)
 
     return jsonify(data)
+
 
 @app.route("/auth/logout", methods=["POST"])
 def auth_logout():
@@ -60,9 +64,11 @@ def auth_logout():
 
     return jsonify(data)
 
+
 @app.route("/users", methods=["GET"])
 def get_users():
     return jsonify(users)
+
 
 @app.route("/messages", methods=["POST"])
 def send_message():
@@ -79,14 +85,51 @@ def send_message():
         }
 
         messages.append(message)
-
         socketio.emit("newMessage", message)
 
     return jsonify({"status": "ok"})
 
+
 @app.route("/messages/<room>", methods=["GET"])
 def get_messages(room):
     return jsonify(get_messages_by_room(room))
+
+
+@app.route("/rooms", methods=["POST"])
+def create_room():
+    data = request.json
+    users = data.get("users")
+
+    users_in_room = []
+
+    for user in users:
+        user_in_room = get_user_by_email(user)
+
+        if user_in_room:
+            users_in_room.append(user_in_room)
+
+    room = {
+        "id": str(uuid4()),
+        "users": users_in_room
+    }
+
+    rooms.append(room)
+    socketio.emit("newRoom", room)
+
+    return jsonify({"status": "ok"})
+
+
+@app.route("/rooms/<email>", methods=["GET"])
+def get_rooms(email):
+    user_rooms = []
+
+    for room in rooms:
+        for user in room.get("users"):
+            if user.get("email") == email:
+                user_rooms.append(room)
+
+    return jsonify(user_rooms)
+
 
 @socketio.on("connect")
 def handle_connect():

@@ -2,6 +2,7 @@ import { api } from '@/services/api'
 import { socketConnection } from '@/utils/websocket'
 import { userJoined, updateActiveUsers } from '@/lib/features/active-users/active-users.slice'
 import { newMessage } from '@/lib/features/messages/messages.slice'
+import { newRoom } from '@/lib/features/rooms/rooms.slice'
 
 export const webSocketApi = api.injectEndpoints({
     endpoints: (builder) => ({
@@ -33,6 +34,11 @@ export const webSocketApi = api.injectEndpoints({
                     socket.on('newMessage', (data) => {
                         console.log('newMessage', data)
                         dispatch(newMessage(data))
+                    })
+
+                    socket.on('newRoom', (data) => {
+                        console.log('newRoom', data)
+                        dispatch(newRoom(data))
                     })
                 } catch (error) {
                     console.error(error)

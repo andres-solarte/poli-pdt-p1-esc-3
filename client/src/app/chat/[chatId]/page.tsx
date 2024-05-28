@@ -1,6 +1,6 @@
 'use client'
 
-import { useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Container from '@mui/material/Container';
 import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
@@ -8,47 +8,60 @@ import InputAdornment from '@mui/material/InputAdornment';
 import IconButton from '@mui/material/IconButton';
 import SendIcon from '@mui/icons-material/Send';
 import ChatMessage from '@/components/chat-message';
+import { usePostMessageMutation, useGetMessagesQuery } from '@/lib/features/messages/messages.api'
+import { Message, PostMessageDto } from '@/lib/features/messages/messages.types';
+import { useForm } from 'react-hook-form';
+import { useSelector } from "react-redux";
+import { AuthState } from '@/lib/features/auth/auth.types';
 
-const me = {
-    email: 'user1@mail.com',
-    name: 'User 1'
+type PageProps = {
+    params: {
+        chatId: string
+    }
 }
 
-const messages = [
-    {
-        email: 'user1@mail.com',
-        name: 'User 1',
-        message: 'Hello!',
-        timestamp: Date.now(),
-    },
-    {
-        email: 'user2@mail.com',
-        name: 'User 2',
-        message: 'Hi there!',
-        timestamp: Date.now(),
-    },
-    {
-        email: 'user1@mail.com',
-        name: 'User 1',
-        message: 'Hey everyone!',
-        timestamp: Date.now(),
-    },
-    {
-        email: 'user2@mail.com',
-        name: 'User 2',
-        message: 'Greetings!',
-        timestamp: Date.now(),
-    },
-    {
-        email: 'user1@mail.com',
-        name: 'User 1',
-        message: 'Good day!',
-        timestamp: Date.now(),
-    },
-];
+const defaultValues = {
+    message: '',
+}
 
-export default function Page() {
+export default function Page(props: PageProps) {
     const scrollToBottomElementRef = useRef<HTMLDivElement>(null);
+    useGetMessagesQuery({ room: props.params.chatId })
+    const authStateSelector = useSelector((state: { auth: AuthState }) => state.auth)
+    const messagesSelector = useSelector((state: { messages: Message[] }) => state.messages)
+    const [postMessage, postMessageStatus] = usePostMessageMutation()
+    const { register, handleSubmit, formState, reset } = useForm({ defaultValues });
+    const { errors } = formState
+    const [messages, setMessages] = useState<Message[]>([])
+
+    useEffect(() => {
+        if (scrollToBottomElementRef.current) {
+            scrollToBottomElementRef.current.scrollIntoView({
+                behavior: 'smooth',
+                block: 'end',
+            });
+        }
+
+        setMessages(
+            messagesSelector
+                .filter(message => message.to === props.params.chatId)
+        )
+    }, [messagesSelector.length])
+
+    const onSubmit = async (data: typeof defaultValues) => {
+
+        if (!authStateSelector?.user) return
+
+        const payload: PostMessageDto = {
+            ...data,
+            from: authStateSelector.user.email,
+            to: 'general'
+        }
+
+        await postMessage(payload)
+
+        reset()
+    }
 
     return (
         <Container maxWidth="md" sx={{
@@ -68,7 +81,7 @@ export default function Page() {
                 {messages.map((message, index) => (
                     <ChatMessage
                         key={index}
-                        me={message.email === me.email}
+                        me={message.from.email === authStateSelector.user?.email}
                         {...message}
                     />
                 ))}
@@ -78,12 +91,18 @@ export default function Page() {
 
             <TextField
                 fullWidth
+                {...register('message', {
+                    required: 'Debes ingresar un mensaje'
+                })}
                 label="Escribe tu mensaje aquí"
+                disabled={postMessageStatus.isLoading}
+                error={!!errors.message}
+                helperText={errors.message?.message}
                 maxRows={4}
                 InputProps={{
                     endAdornment: (
                         <InputAdornment position="end">
-                            <IconButton edge="end" color="primary" onClick={() => { }}>
+                            <IconButton edge="end" color="primary" onClick={handleSubmit(onSubmit)}>
                                 <SendIcon />
                             </IconButton>
                         </InputAdornment>
