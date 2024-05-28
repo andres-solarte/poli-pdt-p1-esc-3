@@ -23,22 +23,13 @@ import { useWebSocketQuery } from '@/lib/features/websocket/websocket.api'
 import ActiveUsers from "./active-users";
 import ActiveConversations from "./active-conversations";
 
-const activeChats = [
-    {
-        name: 'John',
-        email: 'john@mail.com'
-    },
-    {
-        name: 'Emily',
-        email: 'emily@mail.com'
-    },
-    {
-        name: 'Michael',
-        email: 'michael@mail.com'
-    },
-]
+type LayoutProps = {
+    params: {
+        chatId: string
+    }
+} & Readonly<React.PropsWithChildren>
 
-export default function Layout({ children }: Readonly<React.PropsWithChildren>) {
+export default function Layout(props: LayoutProps) {
     useWebSocketQuery(undefined)
     const authStateSelector = useSelector((state: { auth: AuthState }) => state.auth)
     const [logout] = useLogoutMutation()
@@ -87,7 +78,7 @@ export default function Layout({ children }: Readonly<React.PropsWithChildren>) 
                             <ListItemButton
                                 LinkComponent={Link}
                                 selected
-                                href={``}
+                                href={`/chat/general`}
                             >
                                 <ListItemText primary={'Chat general'} />
                             </ListItemButton>
@@ -97,7 +88,10 @@ export default function Layout({ children }: Readonly<React.PropsWithChildren>) 
                     <Divider sx={{ mt: 2, mb: 2 }} />
 
                     {authStateSelector?.user && (
-                        <ActiveConversations email={authStateSelector.user?.email} />
+                        <ActiveConversations
+                            email={authStateSelector.user?.email}
+                            currentRoomId={props.params.chatId}
+                        />
                     )}
                 </Box>
                 <Box
@@ -105,7 +99,7 @@ export default function Layout({ children }: Readonly<React.PropsWithChildren>) 
                         width: `calc(100vw - ${sideNavWidth}px)`,
                     }}
                 >
-                    {children}
+                    {props.children}
                 </Box>
                 <Box
                     sx={{
@@ -114,7 +108,11 @@ export default function Layout({ children }: Readonly<React.PropsWithChildren>) 
                         borderLeft: '1px solid #D9D9D9',
                     }}
                 >
-                    <ActiveUsers />
+                    {authStateSelector?.user && (
+                        <ActiveUsers
+                            email={authStateSelector.user?.email}
+                        />
+                    )}
                 </Box>
             </Stack>
         </Box>

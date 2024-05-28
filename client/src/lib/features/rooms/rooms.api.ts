@@ -1,9 +1,15 @@
 import { api } from '@/services/api'
 import { updateRooms } from './rooms.slice'
+import { User } from '@/types'
+
+type Room = {
+    id: string
+    users: User[]
+}
 
 export const roomsApi = api.injectEndpoints({
     endpoints: (builder) => ({
-        createRoom: builder.mutation<void, string[]>({
+        createRoom: builder.mutation<Room, string[]>({
             query: (users: string[]) => ({
                 url: '/rooms',
                 method: 'POST',

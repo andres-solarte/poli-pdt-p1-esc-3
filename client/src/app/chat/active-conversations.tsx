@@ -9,11 +9,8 @@ import { useListRoomsQuery } from '@/lib/features/rooms/rooms.api';
 import { User } from '@/types';
 import { AuthState } from '@/lib/features/auth/auth.types';
 
-type ActiveConversationsProps = {
-    email: string
-}
-
 type ActiveConversationProps = {
+    selected?: boolean
     currentEmail: string
     room: {
         id: string
@@ -28,12 +25,18 @@ function ActiveConversation(props: ActiveConversationProps) {
         <ListItem disablePadding>
             <ListItemButton
                 LinkComponent={Link}
-                href={``}
+                href={`/chat/${props.room.id}`}
+                selected={props.selected}
             >
                 <ListItemText primary={user?.name} />
             </ListItemButton>
         </ListItem>
     )
+}
+
+type ActiveConversationsProps = {
+    currentRoomId: string
+    email: string
 }
 
 export default function ActiveConversations(props: ActiveConversationsProps) {
@@ -57,6 +60,7 @@ export default function ActiveConversations(props: ActiveConversationsProps) {
                     key={index}
                     currentEmail={authStateSelector.user!.email}
                     room={room}
+                    selected={room.id === props.currentRoomId}
                 />
             ))}
         </List>

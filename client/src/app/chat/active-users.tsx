@@ -8,17 +8,34 @@ import { User } from '@/types';
 import { useActiveUsersQuery } from '@/lib/features/active-users/active-users.api';
 import { AuthState } from '@/lib/features/auth/auth.types';
 import { useCreateRoomMutation } from '@/lib/features/rooms/rooms.api';
+import { useEffect, useState } from 'react';
+import { redirect } from 'next/navigation'
 
-export default function ActiveUsers() {
+type ActiveUsersProps = {
+    email: string
+}
+
+export default function ActiveUsers(props: ActiveUsersProps) {
     useActiveUsersQuery(undefined)
     const authStateSelector = useSelector((state: { auth: AuthState }) => state.auth)
     const activeUsersSelector = useSelector((state: { activeUsers: User[] }) => state.activeUsers)
     const [createRoom, createRoomState] = useCreateRoomMutation()
+    const [users, setUsers] = useState<User[]>([])
+
+    useEffect(() => {
+        if (createRoomState.isSuccess) {
+            redirect(`/chat/${createRoomState.data.id}`)
+        }
+    }, [createRoomState])
+
+    useEffect(() => {
+        setUsers(
+            activeUsersSelector
+                .filter(user => user.email !== props.email)
+        )
+    }, [activeUsersSelector])
 
     const activeUserClick = (activeUser: User) => {
-        console.log('activeUserClick', activeUser)
-        console.log('authStateSelector', authStateSelector.user)
-
         if (authStateSelector.user?.email) {
             createRoom([
                 authStateSelector.user.email,
@@ -38,7 +55,7 @@ export default function ActiveUsers() {
                 </ListSubheader>
             }
         >
-            {activeUsersSelector.map((activeUser, index) => (
+            {users.map((activeUser, index) => (
                 <ListItem key={index} disablePadding>
                     <ListItemButton
                         onClick={() => activeUserClick(activeUser)}

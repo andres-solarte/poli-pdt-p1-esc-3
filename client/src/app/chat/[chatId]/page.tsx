@@ -55,7 +55,7 @@ export default function Page(props: PageProps) {
         const payload: PostMessageDto = {
             ...data,
             from: authStateSelector.user.email,
-            to: 'general'
+            to: props.params.chatId
         }
 
         await postMessage(payload)

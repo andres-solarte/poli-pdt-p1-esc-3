@@ -116,7 +116,7 @@ def create_room():
     rooms.append(room)
     socketio.emit("newRoom", room)
 
-    return jsonify({"status": "ok"})
+    return jsonify(room)
 
 
 @app.route("/rooms/<email>", methods=["GET"])
