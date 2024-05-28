@@ -1,22 +1,25 @@
 import { createSlice } from '@reduxjs/toolkit'
 import { Message } from './messages.types'
 
-const initialState = {
-    messages: [] as Message[],
-}
+const initialState = [] as Message[]
 
 const messagesSlice = createSlice({
-    name: 'auth',
+    name: 'messages',
     initialState,
     reducers: {
         newMessage: (state, action) => {
-            state.messages = [
-                ...state.messages,
+            state = [
+                ...state,
                 action.payload
             ]
+
+            return state
+        },
+        messages: (state, action) => {
+            return action.payload
         }
     },
 })
 
-export const { newMessage } = messagesSlice.actions
+export const { messages, newMessage } = messagesSlice.actions
 export default messagesSlice.reducer

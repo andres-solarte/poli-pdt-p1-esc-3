@@ -3,10 +3,13 @@ import Typography from "@mui/material/Typography";
 import Avatar from "@mui/material/Avatar";
 import React from "react";
 import moment from "moment";
+import Stack from "@mui/material/Stack";
 
 type MessageLeftProps = {
-    email: string;
-    name: string;
+    from: {
+        email: string;
+        name: string;
+    },
     message: string;
     timestamp: number;
 }
@@ -21,36 +24,32 @@ export default function MessageLeft(props: MessageLeftProps) {
                 padding: 1,
             }}
         >
-            <Avatar src="/ChatAiAvatar.svg" />
+            <Avatar />
 
             <Box
                 sx={{
                     borderRadius: "10px 10px 10px 0",
                     border: "1px solid #E0E0E0",
-                    display: "flex",
-                    flexDirection: "column",
-                    justifyContent: "center",
                     padding: 1.5,
-                    minWidth: "30%",
-                    maxWidth: "60%",
+                    minWidth: "40%",
+                    maxWidth: "75%",
                 }}
             >
-                <Typography
-                    sx={{
-                        alignItems: "center",
-                        display: "flex",
-                        fontWeight: 600,
-                        justifyContent: "space-between",
-                        width: "100%",
-                    }}
-                >
-                    {props.name}
-                    <Typography component={"span"} fontSize={"small"}>
-                        {moment(props.timestamp).fromNow()}
-                    </Typography>
-                </Typography>
+                <Stack direction="column" spacing={1}>
+                    <Stack direction="row" spacing={1} justifyContent={'space-between'}>
+                        <Typography>
+                            {props.from.name}
+                        </Typography>
 
-                {props.message}
+                        <Typography component={"span"} fontSize={"small"}>
+                            {moment(props.timestamp).fromNow()}
+                        </Typography>
+                    </Stack>
+
+                    <Typography component={"span"}>
+                        {props.message}
+                    </Typography>
+                </Stack>
 
             </Box>
         </Box>

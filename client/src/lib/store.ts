@@ -4,6 +4,7 @@ import { setupListeners } from '@reduxjs/toolkit/query'
 import { api } from '@/services/api'
 import authReducer from '@/lib/features/auth/auth.slice'
 import activeUsersReducer from '@/lib/features/active-users/active-users.slice'
+import messagesReducer from '@/lib/features/messages/messages.slice'
 
 export const createStore = (
     options?: ConfigureStoreOptions['preloadedState'] | undefined,
@@ -11,7 +12,8 @@ export const createStore = (
     reducer: {
         [api.reducerPath]: api.reducer,
         auth: authReducer,
-        activeUsers: activeUsersReducer
+        activeUsers: activeUsersReducer,
+        messages: messagesReducer,
     },
     middleware: (getDefaultMiddleware) =>
         getDefaultMiddleware().concat(api.middleware),

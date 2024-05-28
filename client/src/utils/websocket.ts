@@ -1,9 +1,14 @@
-import io from 'socket.io-client'
+import io, { Socket } from 'socket.io-client'
+let currentConnection: Socket | null = null
 
 export const socketConnection = () => {
     if (!process.env.NEXT_PUBLIC_API_URL) {
         throw new Error('API URL not found')
     }
 
-    return io(process.env.NEXT_PUBLIC_API_URL)
+    if (!currentConnection) {
+        currentConnection = io(process.env.NEXT_PUBLIC_API_URL)
+    }
+
+    return currentConnection
 }

@@ -1,6 +1,7 @@
 import { api } from '@/services/api'
 import { socketConnection } from '@/utils/websocket'
 import { userJoined, updateActiveUsers } from '@/lib/features/active-users/active-users.slice'
+import { newMessage } from '@/lib/features/messages/messages.slice'
 
 export const webSocketApi = api.injectEndpoints({
     endpoints: (builder) => ({
@@ -27,6 +28,11 @@ export const webSocketApi = api.injectEndpoints({
                     socket.on('usersList', (data) => {
                         console.log('usersList', data)
                         dispatch(updateActiveUsers(data))
+                    })
+
+                    socket.on('newMessage', (data) => {
+                        console.log('newMessage', data)
+                        dispatch(newMessage(data))
                     })
                 } catch (error) {
                     console.error(error)

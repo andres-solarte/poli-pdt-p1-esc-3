@@ -1,12 +1,13 @@
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
-import Avatar from "@mui/material/Avatar";
 import React from "react";
 import moment from "moment";
 
 type MessageCenterProps = {
-    email: string;
-    name: string;
+    from: {
+        email: string;
+        name: string;
+    },
     message: string;
     timestamp: number;
 }
@@ -21,7 +22,6 @@ export default function MessageCenter(props: MessageCenterProps) {
                 padding: 1,
             }}
         >
-            <Avatar src="/ChatAiAvatar.svg" />
 
             <Box
                 sx={{
@@ -44,7 +44,7 @@ export default function MessageCenter(props: MessageCenterProps) {
                         width: "100%",
                     }}
                 >
-                    {props.name}
+                    {props.from.name}
                     <Typography component={"span"} fontSize={"small"}>
                         {moment(props.timestamp).fromNow()}
                     </Typography>

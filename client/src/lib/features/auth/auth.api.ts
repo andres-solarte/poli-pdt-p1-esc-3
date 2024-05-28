@@ -1,6 +1,7 @@
 import { api } from '@/services/api'
 import { AuthLoginDto } from './auth.types';
 import { userLoggedIn, userLoggedOut } from './auth.slice'
+import { socketConnection } from '@/utils/websocket'
 
 export const authApi = api.injectEndpoints({
     endpoints: build => ({
@@ -32,9 +33,12 @@ export const authApi = api.injectEndpoints({
                 body
             }),
             async onQueryStarted(arg, { queryFulfilled, dispatch }) {
+                const socket = socketConnection()
+
                 try {
                     await queryFulfilled
 
+                    socket.close()
                     localStorage.removeItem('auth')
 
                     dispatch(userLoggedOut())
