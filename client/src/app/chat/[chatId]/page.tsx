@@ -13,6 +13,8 @@ import { Message, PostMessageDto } from '@/lib/features/messages/messages.types'
 import { useForm } from 'react-hook-form';
 import { useSelector } from "react-redux";
 import { AuthState } from '@/lib/features/auth/auth.types';
+import Messages from './messages';
+import { useLogoutMutation } from '@/lib/features/auth/auth.api'
 
 type PageProps = {
     params: {
@@ -25,28 +27,15 @@ const defaultValues = {
 }
 
 export default function Page(props: PageProps) {
-    const scrollToBottomElementRef = useRef<HTMLDivElement>(null);
-    useGetMessagesQuery({ room: props.params.chatId })
+    // const scrollToBottomElementRef = useRef<HTMLDivElement>(null);
+    // useGetMessagesQuery({ room: props.params.chatId })
     const authStateSelector = useSelector((state: { auth: AuthState }) => state.auth)
-    const messagesSelector = useSelector((state: { messages: Message[] }) => state.messages)
+    // const messagesSelector = useSelector((state: { messages: Message[] }) => state.messages)
+    const [logout] = useLogoutMutation()
     const [postMessage, postMessageStatus] = usePostMessageMutation()
     const { register, handleSubmit, formState, reset } = useForm({ defaultValues });
     const { errors } = formState
-    const [messages, setMessages] = useState<Message[]>([])
-
-    useEffect(() => {
-        if (scrollToBottomElementRef.current) {
-            scrollToBottomElementRef.current.scrollIntoView({
-                behavior: 'smooth',
-                block: 'end',
-            });
-        }
-
-        setMessages(
-            messagesSelector
-                .filter(message => message.to === props.params.chatId)
-        )
-    }, [messagesSelector.length])
+    // const [messages, setMessages] = useState<Message[]>([])
 
     const onSubmit = async (data: typeof defaultValues) => {
 
@@ -60,6 +49,11 @@ export default function Page(props: PageProps) {
 
         await postMessage(payload)
 
+        if (data.message === 'chao') {
+            if (authStateSelector.user)
+                await logout(authStateSelector.user)
+        }
+
         reset()
     }
 
@@ -72,22 +66,9 @@ export default function Page(props: PageProps) {
             padding: '24px 24px'
         }}>
 
-            <Box sx={{
-                display: "flex",
-                flexDirection: "column",
-                overflowY: 'auto'
-            }}>
-
-                {messages.map((message, index) => (
-                    <ChatMessage
-                        key={index}
-                        me={message.from.email === authStateSelector.user?.email}
-                        {...message}
-                    />
-                ))}
-
-                <div ref={scrollToBottomElementRef} />
-            </Box>
+            <Messages
+                room={props.params.chatId}
+            />
 
             <TextField
                 fullWidth

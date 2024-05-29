@@ -40,13 +40,17 @@ export const webSocketApi = api.injectEndpoints({
                         console.log('newRoom', data)
                         dispatch(newRoom(data))
                     })
+
+                    socket.on('disconnect', () => {
+                        console.log('Disconnected from server')
+                    })
                 } catch (error) {
                     console.error(error)
                 }
 
-                await cacheEntryRemoved
+                /* await cacheEntryRemoved
 
-                socket.close()
+                socket.close() */
             },
         }),
     }),

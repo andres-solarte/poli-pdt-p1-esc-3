@@ -1,5 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit'
 import { Message } from './messages.types'
+import messagesApi from './messages.api'
 
 const initialState = [] as Message[]
 
@@ -15,10 +16,18 @@ const messagesSlice = createSlice({
 
             return state
         },
-        messages: (state, action) => {
+        messages: (_state, action) => {
             return action.payload
         }
     },
+    extraReducers: (builder) => {
+        builder.addMatcher(
+            messagesApi.endpoints.getMessages.matchFulfilled,
+            (_state, { payload }) => {
+                return payload
+            }
+        )
+    }
 })
 
 export const { messages, newMessage } = messagesSlice.actions

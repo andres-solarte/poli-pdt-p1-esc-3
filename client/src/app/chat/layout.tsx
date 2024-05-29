@@ -23,11 +23,7 @@ import { useWebSocketQuery } from '@/lib/features/websocket/websocket.api'
 import ActiveUsers from "./active-users";
 import ActiveConversations from "./active-conversations";
 
-type LayoutProps = {
-    params: {
-        chatId: string
-    }
-} & Readonly<React.PropsWithChildren>
+type LayoutProps = {} & Readonly<React.PropsWithChildren>
 
 export default function Layout(props: LayoutProps) {
     useWebSocketQuery(undefined)
@@ -77,7 +73,6 @@ export default function Layout(props: LayoutProps) {
                         <ListItem disablePadding>
                             <ListItemButton
                                 LinkComponent={Link}
-                                selected
                                 href={`/chat/general`}
                             >
                                 <ListItemText primary={'Chat general'} />
@@ -90,9 +85,10 @@ export default function Layout(props: LayoutProps) {
                     {authStateSelector?.user && (
                         <ActiveConversations
                             email={authStateSelector.user?.email}
-                            currentRoomId={props.params.chatId}
+                            currentRoomId={''}
                         />
                     )}
+
                 </Box>
                 <Box
                     sx={{

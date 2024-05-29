@@ -10,7 +10,6 @@ type MessageLeftProps = {
         email: string;
         name: string;
     },
-    to: string;
     message: string;
     timestamp: number;
 }
@@ -43,13 +42,9 @@ export default function MessageLeft(props: MessageLeftProps) {
                         </Typography>
 
                         <Typography component={"span"} fontSize={"small"}>
-                            {moment(props.timestamp).fromNow()}
+                            {moment.unix(props.timestamp).fromNow()}
                         </Typography>
                     </Stack>
-
-                    <Typography>
-                        {props.to}
-                    </Typography>
 
                     <Typography component={"span"}>
                         {props.message}

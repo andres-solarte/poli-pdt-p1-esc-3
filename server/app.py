@@ -2,7 +2,7 @@ from flask import Flask, request, jsonify
 from flask_cors import CORS
 from flask_socketio import SocketIO, emit, join_room, leave_room
 from uuid import uuid4
-import datetime
+from datetime import datetime
 
 app = Flask(__name__)
 CORS(app)
@@ -77,11 +77,17 @@ def send_message():
     user = get_user_by_email(data.get("from"))
 
     if user:
+        now = datetime.now()
+        print('Date and Time is:', now)
+
+        timestamp = datetime.timestamp(now)
+        print("timestamp =", timestamp)
+
         message = {
             "from": user,
             "to": to,
             "message": data.get("message"),
-            "timestamp": datetime.datetime.now().timestamp()
+            "timestamp": timestamp
         }
 
         messages.append(message)

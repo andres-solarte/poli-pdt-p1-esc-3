@@ -8,6 +8,7 @@ import Link from 'next/link';
 import { useListRoomsQuery } from '@/lib/features/rooms/rooms.api';
 import { User } from '@/types';
 import { AuthState } from '@/lib/features/auth/auth.types';
+import { useEffect, useState } from 'react';
 
 type ActiveConversationProps = {
     selected?: boolean
@@ -43,6 +44,18 @@ export default function ActiveConversations(props: ActiveConversationsProps) {
     useListRoomsQuery(props.email)
     const authStateSelector = useSelector((state: { auth: AuthState }) => state.auth)
     const roomsSelector = useSelector((state: { rooms: any[] }) => state.rooms)
+    const [rooms, setRooms] = useState<any[]>([])
+
+    useEffect(() => {
+        if (authStateSelector.user) {
+            setRooms(
+                roomsSelector
+                    .filter(
+                        room => room.users.some((user: User) => user.email === authStateSelector.user!.email)
+                    )
+            )
+        }
+    }, [roomsSelector, authStateSelector])
 
     return (
         <List
@@ -55,7 +68,7 @@ export default function ActiveConversations(props: ActiveConversationsProps) {
                 </ListSubheader>
             }
         >
-            {authStateSelector.user && roomsSelector.map((room, index) => (
+            {authStateSelector.user && rooms.map((room, index) => (
                 <ActiveConversation
                     key={index}
                     currentEmail={authStateSelector.user!.email}

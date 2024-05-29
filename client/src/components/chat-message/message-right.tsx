@@ -10,7 +10,6 @@ type MessageRightProps = {
         email: string;
         name: string;
     },
-    to: string;
     message: string;
     timestamp: number;
 }
@@ -40,13 +39,9 @@ export default function MessageRight(props: MessageRightProps) {
                     <Stack direction="row" spacing={1} justifyContent={'end'}>
 
                         <Typography component={"span"} fontSize={"small"}>
-                            {moment(props.timestamp).fromNow()}
+                            {moment.unix(props.timestamp).fromNow()}
                         </Typography>
                     </Stack>
-
-                    <Typography>
-                        {props.to}
-                    </Typography>
 
                     <Typography component={"span"}>
                         {props.message}
